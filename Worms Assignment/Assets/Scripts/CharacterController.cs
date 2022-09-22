@@ -7,12 +7,14 @@ public class CharacterController : MonoBehaviour
 {
     [SerializeField] GameObject activePlayer;
     PlayerInput activePlayerInput;
+    Player activePlayerCode;
     [SerializeField] Rigidbody rb;
     Vector3 eulerAngleVelocity;
     //[SerializeField] GameObject camHolder;
     [SerializeField] float speed = 10 , force = 5, rotationSpeed = 5;
     Vector2 move, look;
     PlayerInputs playerInput;
+    bool isAiming = false;
 
     private void Awake() {
         eulerAngleVelocity = new Vector3(0, 100, 0);
@@ -26,6 +28,8 @@ public class CharacterController : MonoBehaviour
         playerInput = new PlayerInputs();
         playerInput.Player.Enable();
         playerInput.Player.Jump.performed += Jump;
+        playerInput.Player.Aim.performed += Aim;
+        //playerInput.Player.Aim.canceled += Aim;
     }
 
     private void OnDisable() {
@@ -50,26 +54,49 @@ public class CharacterController : MonoBehaviour
         if (direction.x != 0){
             Quaternion rotation = Quaternion.Euler(0, direction.x*rotationSpeed*Time.fixedDeltaTime, 0);
             rb.MoveRotation(rb.rotation*rotation);
-            //rb.rotation = Quaternion.RotateTowards(rb.rotation, rotation, rotationSpeed*Time.fixedDeltaTime);
-            //activePlayer.transform.forward = direction;
-             Debug.Log("Rotating");
+            Debug.Log("Rotating");
         }
-        if (direction.z != 0){
+        if (direction.z != 0 && activePlayerCode.IsGrounded()){
             rb.AddForce(rb.transform.forward*direction.z*speed, ForceMode.Force);
              Debug.Log("Moving");
         }
+        else if (direction.z != 0 && !activePlayerCode.IsGrounded()){
+            rb.AddForce(rb.transform.forward*direction.z*force, ForceMode.Force);
+        }
+        else{
+            rb.AddForce(Vector3.zero, ForceMode.Force);
+        }
     }
     public void Jump(InputAction.CallbackContext context){
-        if (context.performed){
+        if (context.performed && activePlayerCode.IsGrounded()){
             Debug.Log("Jumped");
-            rb.AddForce(Vector3.up*force,ForceMode.Impulse);
+            rb.velocity = new Vector3(0, force, 0);
         }
+    }
+
+    public void Aim(InputAction.CallbackContext context){
+        if (!isAiming){
+            activePlayerCode.ActivateAimCamera();
+            isAiming = true;
+        }
+        else{
+            activePlayerCode.DeactivateAimCamera();
+            isAiming = false;
+        }
+        /*if (context.canceled){
+
+        }*/
+    }
+
+    public void RotateWeapon(){
+        
     }
 
     public void SetActivePlayer(GameObject player){
         activePlayer = player;
         rb = activePlayer.GetComponent<Rigidbody>();
         activePlayerInput = activePlayer.GetComponent<PlayerInput>();
+        activePlayerCode = activePlayer.GetComponent<Player>();
     }
     
     /*PlayerInputs playerInput;
