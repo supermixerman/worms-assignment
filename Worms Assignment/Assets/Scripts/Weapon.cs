@@ -13,25 +13,27 @@ public class Weapon : MonoBehaviour
     }
 
     private void FixedUpdate() {
-        string fire = Fire();
-        Debug.Log("You hit: " + fire); 
+        //string fire = Fire();
+        //Debug.Log("You hit: " + fire); 
     }
 
     public int DealDamage(){
         return damage;
     }
 
-    public string Fire(){
+    public void Fire(){
         RaycastHit hit;
         if (Physics.Raycast(startPoint.transform.position, transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity))
         {
             Debug.DrawRay(startPoint.transform.position, transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
             //Debug.Log("Hit "+ hit.collider.name);
-            return hit.collider.name;
+            if (hit.collider.CompareTag("Player")){
+                hit.transform.GetComponent<Player>().TakeDamage(this.damage);
+            }
         }
         else {
             Debug.DrawRay(startPoint.transform.position, transform.TransformDirection(Vector3.forward)*100, Color.red);
-            return "None";
+            Debug.Log("Hit "+ hit.collider.name);
         }
     }
 }

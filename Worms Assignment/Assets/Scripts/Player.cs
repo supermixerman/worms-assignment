@@ -7,10 +7,11 @@ public class Player : MonoBehaviour
 {
     [SerializeField] int maxHealth = 100; //Players max health
     private int health; //Players current health.
-    [SerializeField] Weapon weaponEquipped; //Which weapon the player should use
+    [SerializeField] GameObject weaponEquipped; //Which weapon the player should use
     [SerializeField] HealthBar healthBar;
     [SerializeField] CinemachineVirtualCamera aimCam;
-    private bool grounded, isDead;
+    private bool grounded, isDead = false;
+    private Animator anim;
     //PlayerInput playerInput;
     void Awake()
     {
@@ -18,6 +19,7 @@ public class Player : MonoBehaviour
         //playerInput = GetComponent<PlayerInput>();
         //playerInput.camera = GameObject.Find("Main Camera").GetComponent<Camera>();
         healthBar.SetMaxValue(maxHealth);
+        anim = this.GetComponent<Animator>();
     }
 
     public void SetName(string newName){
@@ -29,13 +31,20 @@ public class Player : MonoBehaviour
     }
     
     public void TakeDamage(int damage){ //Lowers health depending on the damage value
+        if(isDead){return;}
+
         this.health -= damage;
         if (this.health <= 0) {
+            isDead = true;
             this.health = 0;
             healthBar.SetValue(health);
-            Dead();
+            StartCoroutine("Dead");
+            return;
         }
+        anim.SetTrigger("Damage");
+        anim.SetInteger("DamageType", 1);
         healthBar.SetValue(health);
+        Debug.Log("Player health: "+health);
     }
     
     public void Heal(int amount){ //Heals the player by the amount.
@@ -47,15 +56,27 @@ public class Player : MonoBehaviour
         healthBar.SetValue(health);
     }
 
+    public GameObject GetWeapon(){
+        return weaponEquipped;
+    }
+    public void GetWeaponFire(){
+        weaponEquipped.GetComponent<Weapon>().Fire();
+    }
+
     public bool IsGrounded(){
         return grounded;
     }
-    public void EquipWeapon(Weapon newWeapon) {
+    public void EquipWeapon(GameObject newWeapon) {
         weaponEquipped = newWeapon;
     }
 
-    public void Dead(){
-
+    IEnumerator Dead(){
+        Debug.Log("Player Dies");
+        anim.SetInteger("DamageType", 2);
+        anim.SetTrigger("Damage");
+        yield return new WaitForSeconds(2f);
+        this.gameObject.SetActive(false);
+        yield return null;
     }
 
     public void ActivateAimCamera() {
