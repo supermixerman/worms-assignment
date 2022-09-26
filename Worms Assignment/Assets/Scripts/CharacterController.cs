@@ -7,7 +7,7 @@ public class CharacterController : MonoBehaviour
 {
     [SerializeField] GameObject activePlayer;
     PlayerInput activePlayerInput;
-    Player activePlayerCode;
+    public Player activePlayerCode;
     [SerializeField] Rigidbody rb;
     Vector3 eulerAngleVelocity;
     //[SerializeField] GameObject camHolder;
@@ -43,12 +43,13 @@ public class CharacterController : MonoBehaviour
 
     private void FixedUpdate() {
         Move();
-        RotateWeapon();
+        if(isAiming){
+            RotateWeapon();
+        }
     }
 
     public void Move(){
         move = playerInput.Player.Move.ReadValue<Vector2>();
-        //Debug.Log(move);
         Vector3 direction = new Vector3(move.x, 0, move.y);
         if (direction.x != 0){
             RotatePlayer(direction.x, rotationSpeed);
@@ -80,9 +81,6 @@ public class CharacterController : MonoBehaviour
             activePlayerCode.DeactivateAimCamera();
             isAiming = false;
         }
-        /*if (context.canceled){
-
-        }*/
     }
 
     public void Shoot(InputAction.CallbackContext context){
@@ -99,8 +97,6 @@ public class CharacterController : MonoBehaviour
         //Debug.Log("Rotating weapon"+lookDirection);
         if (lookDirection.z != 0){
             activePlayerCode.GetWeapon().GetComponent<Transform>().transform.Rotate(-lookDirection.z*lookSpeed*Time.fixedDeltaTime, 0, 0, Space.Self);
-            //Quaternion weaponRotation = Quaternion.Euler(lookDirection.x*rotationSpeed, 0, 0);
-            //activePlayerCode.GetWeapon().GetComponent<Transform>().transform.rotation = Quaternion.Slerp(transform.rotation, weaponRotation, Time.fixedDeltaTime);
         }
         if (lookDirection.x != 0){
             RotatePlayer(lookDirection.x, lookSpeed);
@@ -116,8 +112,8 @@ public class CharacterController : MonoBehaviour
 
     public void RotatePlayer(float direction, float rotSpeed){
         Quaternion rotation = Quaternion.Euler(0, direction*rotSpeed*Time.fixedDeltaTime, 0);
-            rb.MoveRotation(rb.rotation*rotation);
-            Debug.Log("Rotating");
+        rb.MoveRotation(rb.rotation*rotation);
+        Debug.Log("Rotating");
     }
     
     /*PlayerInputs playerInput;

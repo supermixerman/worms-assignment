@@ -66,6 +66,10 @@ public class Player : MonoBehaviour
     public bool IsGrounded(){
         return grounded;
     }
+
+    public bool IsDead(){
+        return isDead;
+    }
     public void EquipWeapon(GameObject newWeapon) {
         weaponEquipped = newWeapon;
     }
@@ -88,13 +92,13 @@ public class Player : MonoBehaviour
     }
 
     private void OnCollisionEnter(Collision other) {
-        if (other.gameObject.tag == "floor"){
+        if (other.gameObject.tag == "floor" || other.gameObject.tag == "Player"){
             grounded = true;
         }
     }
 
     private void OnCollisionExit(Collision other) {
-        if (other.gameObject.tag == "floor"){
+        if (other.gameObject.tag == "floor" || other.gameObject.tag == "Player"){
             grounded = false;
         }
     }
