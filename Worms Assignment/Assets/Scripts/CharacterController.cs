@@ -15,6 +15,7 @@ public class CharacterController : MonoBehaviour
     Vector2 move, look;
     PlayerInputs playerInput;
     bool isAiming = false;
+    public bool turnOver = false;
 
     private void Awake() {
         eulerAngleVelocity = new Vector3(0, 100, 0);
@@ -42,6 +43,7 @@ public class CharacterController : MonoBehaviour
     }
 
     private void FixedUpdate() {
+        if (turnOver) return;
         Move();
         if(isAiming){
             RotateWeapon();
@@ -84,10 +86,13 @@ public class CharacterController : MonoBehaviour
     }
 
     public void Shoot(InputAction.CallbackContext context){
-        if(!isAiming){
+        if(!isAiming||turnOver){
             return;
         }
         activePlayerCode.GetWeaponFire();
+        activePlayerCode.DeactivateAimCamera();
+        isAiming = false;
+        turnOver = true;
         Debug.Log("Fire");
     }
 

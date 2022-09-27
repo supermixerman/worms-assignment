@@ -33,7 +33,7 @@ public class Weapon : MonoBehaviour
         }
         else {
             Debug.DrawRay(startPoint.transform.position, transform.TransformDirection(Vector3.forward)*100, Color.red);
-            Debug.Log("Hit "+ hit.collider.name);
+            Debug.Log("Hit nothing");
         }
     }
 }

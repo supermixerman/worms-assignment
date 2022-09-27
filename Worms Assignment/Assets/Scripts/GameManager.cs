@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using Cinemachine;
+//using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -22,9 +22,11 @@ public class GameManager : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
-        
+        if(characterController.turnOver){
+            NewTurn();
+        }
     }
 
     //Spawns the amount of players in spawn locations set out in the scene.
@@ -57,14 +59,18 @@ public class GameManager : MonoBehaviour
     public void NewTurn(){
         turn++;
         if (turn > playerList.Count){
+            Debug.Log("Reset turn");
             turn = 0;
         }
         if (!playerList[turn].activeInHierarchy){
            WinCheck();
+           return;
         }
+        Debug.Log("Turn num = "+turn);
         //playerList[turn].GetComponent<Player>().IsDead();
         characterController.SetActivePlayer(playerList[turn]);
         CameraFollow(playerList[turn].transform);
+        characterController.turnOver = false;
     }
 
     public void WinCheck(){
@@ -77,6 +83,7 @@ public class GameManager : MonoBehaviour
         }
         if (playersAlive.Count == 1){
             winner = playersAlive[0].gameObject.name;
+            characterController.turnOver = true;
             gameOverScreen.SetActive(true);
             Debug.Log("The winner is " + winner);
         }
