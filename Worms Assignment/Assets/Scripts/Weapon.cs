@@ -28,7 +28,15 @@ public class Weapon : MonoBehaviour
             Debug.DrawRay(startPoint.transform.position, transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
             //Debug.Log("Hit "+ hit.collider.name);
             if (hit.collider.CompareTag("Player")){
+                Rigidbody targetRB = hit.transform.GetComponent<Rigidbody>();
                 hit.transform.GetComponent<Player>().TakeDamage(this.damage);
+                //Vector3 pos = startPoint.transform.position;
+                //pos.y = targetRB.transform.position.y;
+                //targetRB.rotation = Quaternion.LookRotation(pos);
+                hit.transform.LookAt(startPoint.transform.position);
+                targetRB.AddForce(-targetRB.transform.forward*20, ForceMode.Impulse);
+                hit.transform.Rotate(0 ,hit.transform.rotation.y, 0);
+                //targetRB.rotation = Quaternion.identity;
             }
         }
         else {

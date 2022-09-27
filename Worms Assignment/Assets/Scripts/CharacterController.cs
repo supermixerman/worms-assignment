@@ -58,7 +58,7 @@ public class CharacterController : MonoBehaviour
         }
         if (direction.z != 0 && activePlayerCode.IsGrounded()){
             rb.AddForce(rb.transform.forward*direction.z*speed, ForceMode.Force);
-             Debug.Log("Moving");
+             //Debug.Log("Moving");
         }
         else if (direction.z != 0 && !activePlayerCode.IsGrounded()){ //Let's the player move in the air with a slower speed.
             rb.AddForce(rb.transform.forward*direction.z*force, ForceMode.Force);
@@ -75,6 +75,7 @@ public class CharacterController : MonoBehaviour
     }
 
     public void Aim(InputAction.CallbackContext context){
+        if(turnOver) return;
         if (!isAiming){
             activePlayerCode.ActivateAimCamera();
             isAiming = true;
@@ -118,7 +119,7 @@ public class CharacterController : MonoBehaviour
     public void RotatePlayer(float direction, float rotSpeed){
         Quaternion rotation = Quaternion.Euler(0, direction*rotSpeed*Time.fixedDeltaTime, 0);
         rb.MoveRotation(rb.rotation*rotation);
-        Debug.Log("Rotating");
+        //Debug.Log("Rotating");
     }
     
     /*PlayerInputs playerInput;
