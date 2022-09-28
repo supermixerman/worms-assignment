@@ -13,6 +13,7 @@ public class Weapon : MonoBehaviour
     }
 
     private void FixedUpdate() {
+        
         //string fire = Fire();
         //Debug.Log("You hit: " + fire); 
     }
@@ -30,13 +31,19 @@ public class Weapon : MonoBehaviour
             if (hit.collider.CompareTag("Player")){
                 Rigidbody targetRB = hit.transform.GetComponent<Rigidbody>();
                 hit.transform.GetComponent<Player>().TakeDamage(this.damage);
-                //Vector3 pos = startPoint.transform.position;
+                targetRB.AddForceAtPosition(transform.TransformDirection(Vector3.forward)*400, hit.point);
+                //Vector3 lookDirection = startPoint.transform.position - hit.transform.position;
+                //targetRB.rotation = Quaternion.Ro(pos, Vector3.up);
                 //pos.y = targetRB.transform.position.y;
-                //targetRB.rotation = Quaternion.LookRotation(pos);
-                hit.transform.LookAt(startPoint.transform.position);
-                targetRB.AddForce(-targetRB.transform.forward*20, ForceMode.Impulse);
-                hit.transform.Rotate(0 ,hit.transform.rotation.y, 0);
+                //targetRB.rotation = Quaternion.Euler(0, lookDirection.y, 0);
+                //hit.transform.LookAt(hit.point);
+                //targetRB.AddForce(-targetRB.transform.forward*500, ForceMode.Force);
+                //hit.transform.Rotate(0 ,hit.transform.rotation.y, 0);
                 //targetRB.rotation = Quaternion.identity;
+                Debug.Log("Hit Player");
+            }
+            else{
+                Debug.Log("Hit: " + hit.transform.tag);
             }
         }
         else {

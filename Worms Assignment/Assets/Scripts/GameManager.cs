@@ -27,7 +27,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        if(characterController.turnOver&&!routineRunning)
+        if(characterController.turnOver&&!routineRunning||playerList[turn].GetComponent<Player>().IsDead()&&!routineRunning)
         {
             routineRunning = true;
             StartCoroutine(WaitForNextTurn(1f));

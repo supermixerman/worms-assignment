@@ -10,7 +10,7 @@ public class Player : MonoBehaviour
     [SerializeField] GameObject weaponEquipped; //Which weapon the player should use
     [SerializeField] HealthBar healthBar;
     [SerializeField] CinemachineVirtualCamera aimCam;
-    private bool grounded, isDead = false;
+    [SerializeField] private bool grounded, isDead = false;
     private Animator anim;
     //PlayerInput playerInput;
     void Awake()
@@ -20,6 +20,10 @@ public class Player : MonoBehaviour
         //playerInput.camera = GameObject.Find("Main Camera").GetComponent<Camera>();
         healthBar.SetMaxValue(maxHealth);
         anim = this.GetComponent<Animator>();
+    }
+
+    private void Update() {
+        Debug.DrawRay(transform.position, transform.forward*100, Color.red);
     }
 
     public void SetName(string newName){
@@ -91,13 +95,28 @@ public class Player : MonoBehaviour
         aimCam.Priority = 0;
     }
 
-    private void OnCollisionEnter(Collision other) {
-        if (other.gameObject.tag == "floor" || other.gameObject.tag == "Player"){
-            grounded = true;
+    private void OnTriggerEnter(Collider other) {
+        if (other.gameObject.CompareTag("floor") || other.gameObject.CompareTag("Player")){
+                grounded = true;
+                Debug.Log("Touch Grass " + other.gameObject.name);
+        }
+        /*
+        if (other.gameObject.CompareTag("wall")){
+            Vector3 direction = other.contacts[0].point - transform.position;
+            direction = -direction.normalized;
+            gameObject.GetComponent<Rigidbody>().AddForce(direction*200f);
+        }*/
+    }
+
+    private void OnTriggerStay(Collider other) {
+        if (other.gameObject.CompareTag("floor") || other.gameObject.CompareTag("Player")){
+                grounded = true;
+                //Debug.Log("Touch Grass " + other.gameObject.name);
         }
     }
 
-    private void OnCollisionExit(Collision other) {
+    private void OnTriggerExit(Collider other) {
+        Debug.Log("Collider Exited: " + other.gameObject.name);
         if (other.gameObject.tag == "floor" || other.gameObject.tag == "Player"){
             grounded = false;
         }
