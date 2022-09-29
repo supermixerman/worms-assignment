@@ -36,7 +36,7 @@ public class Player : MonoBehaviour
     
     public void TakeDamage(int damage){ //Lowers health depending on the damage value
         if(isDead){return;}
-
+        FindObjectOfType<AudioManager>().PlaySound("hit");
         this.health -= damage;
         if (this.health <= 0) {
             isDead = true;

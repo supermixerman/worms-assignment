@@ -25,7 +25,8 @@ public class CharacterController : MonoBehaviour
         //playerInput.Player.Move.performed += Move;
     }
 
-    private void OnEnable() {
+    //Enable all important inputs for players.
+    private void OnEnable() { 
         playerInput = new PlayerInputs();
         playerInput.Player.Enable();
         playerInput.Player.Jump.performed += Jump;
@@ -38,44 +39,65 @@ public class CharacterController : MonoBehaviour
         playerInput.Player.Disable();
     }
 
+    //Makes sure the first player is being controlled on start.
     private void Start() {
         SetActivePlayer(activePlayer);
     }
 
     private void FixedUpdate() {
-        if (turnOver) return;
+        if (turnOver) { //To make sure players can't move while moving to next turn.
+            if(isAiming){ //Stops a bug where the camera freezes on one players aim camera
+                activePlayerCode.DeactivateAimCamera();
+                isAiming = false;
+            }
+            return;
+        }
         Move();
         if(isAiming){
-            RotateWeapon();
+            RotateWeapon(); //Rotates the weapon for aiming if the player is in aim mode.
         }
     }
 
     public void Move(){
-        move = playerInput.Player.Move.ReadValue<Vector2>();
-        Vector3 direction = new Vector3(move.x, 0, move.y);
-        if (direction.x != 0){
+        move = playerInput.Player.Move.ReadValue<Vector2>(); //Takes the input value from the Move input. Vector inputs are normalized.
+        Vector3 direction = new Vector3(move.x, 0, move.y); //Set the input values into the wished directions in a Vector3.
+        
+        //Players rotate left or right when pressing/tilting on the side of the input.
+        if (direction.x != 0){ 
+            //FindObjectOfType<AudioManager>().PlaySound("move");
             RotatePlayer(direction.x, rotationSpeed);
         }
+
+        //Players move forward or backward when pressing/tilting the up and down inputs.
         if (direction.z != 0 && activePlayerCode.IsGrounded()){
+            FindObjectOfType<AudioManager>().PlaySound("move");
             rb.AddForce(rb.transform.forward*direction.z*speed, ForceMode.Force);
              //Debug.Log("Moving");
         }
-        else if (direction.z != 0 && !activePlayerCode.IsGrounded()){ //Let's the player move in the air with a slower speed.
+        //Let's the players move in the air with a slower speed.
+        else if (direction.z != 0 && !activePlayerCode.IsGrounded()){ 
             rb.AddForce(rb.transform.forward*direction.z*force, ForceMode.Force);
         }
+        //Stops players movement to avoid sliding when not moving
         else{
-            rb.AddForce(Vector3.zero, ForceMode.Force); //Stops players movement to avoid sliding when not moving
-        }
-    }
-    public void Jump(InputAction.CallbackContext context){
-        if (context.performed && activePlayerCode.IsGrounded()){
-            Debug.Log("Jumped");
-            rb.velocity = new Vector3(0, force, 0);
+            rb.AddForce(Vector3.zero, ForceMode.Force);
         }
     }
 
+    //Players jump function
+    public void Jump(InputAction.CallbackContext context){
+        //Player can only jump while on the ground.
+        if (context.performed && activePlayerCode.IsGrounded()){
+            Debug.Log("Jumped");
+            rb.velocity = new Vector3(0, force, 0); //I use velocity to make the jump more instant.
+            FindObjectOfType<AudioManager>().PlaySound("jump");
+        }
+    }
+
+    //Function for players aiming the gun in the game.
     public void Aim(InputAction.CallbackContext context){
-        if(turnOver) return;
+        if(turnOver) return; //Stops players to run this function while waiting for the next turn.
+        FindObjectOfType<AudioManager>().PlaySound("aim");
         if (!isAiming){
             activePlayerCode.ActivateAimCamera();
             isAiming = true;
@@ -92,6 +114,7 @@ public class CharacterController : MonoBehaviour
         }
         activePlayerCode.GetWeaponFire();
         activePlayerCode.DeactivateAimCamera();
+        FindObjectOfType<AudioManager>().PlaySound("fire");
         isAiming = false;
         turnOver = true;
         Debug.Log("Fire");

@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 using UnityEngine.SceneManagement;
-//using UnityEngine.UI;
+using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,12 +12,16 @@ public class GameManager : MonoBehaviour
     [SerializeField] CinemachineVirtualCamera playerCamera;
     [SerializeField] int playerAmount, turn;
     [SerializeField] CharacterController characterController;
+    [SerializeField] AudioManager audioManager;
     [SerializeField] GameObject gameOverScreen;
+    [SerializeField] RoundTimer roundTimer;
+    [SerializeField] Text turnText;
     //[SerializeField] VictoryUI victoryUI;
     [SerializeField] List<GameObject> playerList;
     [SerializeField] List<Transform> spawnLocations;
     private string winner;
     bool routineRunning;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -27,7 +32,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        if(characterController.turnOver&&!routineRunning||playerList[turn].GetComponent<Player>().IsDead()&&!routineRunning)
+        if(characterController.turnOver&&!routineRunning || playerList[turn].GetComponent<Player>().IsDead()&&!routineRunning || roundTimer.GetTimer()<=0&&!routineRunning)
         {
             routineRunning = true;
             StartCoroutine(WaitForNextTurn(1f));
@@ -63,11 +68,11 @@ public class GameManager : MonoBehaviour
         turn = 0;
         characterController.SetActivePlayer(playerList[0]);
         CameraFollow(playerList[0].transform);
+        turnText.text = "Turn: "+playerList[0].name;
     }
 
     public void NewTurn(){
         Debug.Log("New Turn");
-        WinCheck();
         turn++;
         if (turn >= playerList.Count){
             Debug.Log("Reset turn");
@@ -81,7 +86,7 @@ public class GameManager : MonoBehaviour
         //playerList[turn].GetComponent<Player>().IsDead();
         characterController.SetActivePlayer(playerList[turn]);
         CameraFollow(playerList[turn].transform);
-        characterController.turnOver = false;
+        turnText.text = "Turn: "+playerList[turn].name;
     }
 
     public void WinCheck(){
@@ -95,22 +100,32 @@ public class GameManager : MonoBehaviour
         Debug.Log("Players Alive: " + playersAlive.Count);
         if (playersAlive.Count == 1){
             winner = playersAlive[0].gameObject.name;
-            //victoryUI.SetWinText(winner);
+            roundTimer.StopTimer();
             gameOverScreen.SetActive(true);
+            turnText.gameObject.SetActive(false);
+            roundTimer.gameObject.SetActive(false);
             gameOverScreen.GetComponent<VictoryUI>().SetWinText(winner);
             Debug.Log("The winner is " + winner);
         }
     }
 
     IEnumerator WaitForNextTurn(float timer){
+        WinCheck();
         yield return new WaitForSeconds(timer);
-        NewTurn();
-        routineRunning = false;
+        if (winner == null){
+            NewTurn();
+            routineRunning = false;
+        }
         yield return null;
     }
 
     public void ReloadScene(){
         SceneManager.LoadScene(0, LoadSceneMode.Single);
+    }
+
+    public void ResumeTurn(){
+        characterController.turnOver = false;
+        roundTimer.ResetTimer();
     }
 }
 

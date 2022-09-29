@@ -512,7 +512,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &3040345550130831807
 Transform:
   m_ObjectHideFlags: 0
@@ -650,10 +650,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8087148769170482884}
+  - component: {fileID: 8087148769170482891}
   - component: {fileID: 8087148769170482887}
   - component: {fileID: 8087148769170482886}
   - component: {fileID: 8087148769170482888}
-  - component: {fileID: 8087148769170482891}
   - component: {fileID: 5378864064839445995}
   - component: {fileID: 6435349129716949102}
   - component: {fileID: 1048785766372646076}
@@ -683,6 +683,24 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8087148769170482891
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8087148769170482885}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3fb00fdd662db34db434da74c829e9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  weaponEquipped: {fileID: 2588517825420506704}
+  healthBar: {fileID: 361666868934858612}
+  aimCam: {fileID: 4448819014863028170}
+  grounded: 0
+  isDead: 0
 --- !u!95 &8087148769170482887
 Animator:
   serializedVersion: 4
@@ -717,7 +735,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 80
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!65 &8087148769170482888
 BoxCollider:
@@ -728,28 +746,10 @@ BoxCollider:
   m_GameObject: {fileID: 8087148769170482885}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 0.43611193, y: 0.42068553, z: 0.38801676}
   m_Center: {x: -0.005663514, y: 0.23034275, z: -0.005991608}
---- !u!114 &8087148769170482891
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8087148769170482885}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3fb00fdd662db34db434da74c829e9f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 100
-  weaponEquipped: {fileID: 2588517825420506704}
-  healthBar: {fileID: 361666868934858612}
-  aimCam: {fileID: 4448819014863028170}
-  grounded: 0
-  isDead: 0
 --- !u!114 &5378864064839445995
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -802,9 +802,9 @@ SphereCollider:
   m_GameObject: {fileID: 8087148769170482885}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.26
+  m_Radius: 0.23
   m_Center: {x: 0, y: 0.24, z: 0}
 --- !u!1 &9178165965636724947
 GameObject:
