@@ -9,22 +9,27 @@ public class RoundTimer : MonoBehaviour
     [SerializeField] Text displayText;
 
     private float timer;
+
+    public bool runTimer;
     
     // Start is called before the first frame update
     void Start()
     {
-        ResetTimer();
+        runTimer = false;
+        //ResetTimer();
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
+        if(!runTimer) return;
         if(timer>0){
-            timer -= Time.deltaTime;
+            timer -= Time.fixedDeltaTime;
             SetTimerDisplay(timer);
         }
         else{
             timer = 0;
+            SetTimerDisplay(timer);
         }
     }
 
@@ -41,7 +46,14 @@ public class RoundTimer : MonoBehaviour
         return timer;
     }
 
+    public void StartTimer(){
+        runTimer = true;
+        ResetTimer();
+    }
+
     public void StopTimer(){
         timer = 0;
+        SetTimerDisplay(timer);
+        runTimer = false;
     }
 }

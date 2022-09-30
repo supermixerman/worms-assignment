@@ -83,6 +83,7 @@ public class Player : MonoBehaviour
         anim.SetInteger("DamageType", 2);
         anim.SetTrigger("Damage");
         yield return new WaitForSeconds(2f);
+        //StartCoroutine(GameManager.gameManager.WaitForNextTurn(1f));
         this.gameObject.SetActive(false);
         yield return null;
     }

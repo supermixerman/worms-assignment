@@ -9,16 +9,16 @@ public class CharacterController : MonoBehaviour
     PlayerInput activePlayerInput;
     public Player activePlayerCode;
     [SerializeField] Rigidbody rb;
-    Vector3 eulerAngleVelocity;
     //[SerializeField] GameObject camHolder;
     [SerializeField] float speed = 10 , force = 5, rotationSpeed = 5, lookSpeed = 10;
     Vector2 move, look;
     PlayerInputs playerInput;
     bool isAiming = false;
     public bool turnOver = false;
+    AudioManager audioManager;
 
     private void Awake() {
-        eulerAngleVelocity = new Vector3(0, 100, 0);
+        audioManager = FindObjectOfType<AudioManager>();
         //playerInput = new PlayerInputs();
         //playerInput.Player.Enable();
         //playerInput.Player.Jump.performed += Jump;
@@ -32,7 +32,7 @@ public class CharacterController : MonoBehaviour
         playerInput.Player.Jump.performed += Jump;
         playerInput.Player.Aim.performed += Aim;
         playerInput.Player.Fire.performed += Shoot;
-        //playerInput.Player.Aim.canceled += Aim;
+        playerInput.Player.Confirm.performed += StartTurn;
     }
 
     private void OnDisable() {
@@ -64,13 +64,13 @@ public class CharacterController : MonoBehaviour
         
         //Players rotate left or right when pressing/tilting on the side of the input.
         if (direction.x != 0){ 
-            //FindObjectOfType<AudioManager>().PlaySound("move");
+            //audioManager.PlaySound("move");
             RotatePlayer(direction.x, rotationSpeed);
         }
 
         //Players move forward or backward when pressing/tilting the up and down inputs.
         if (direction.z != 0 && activePlayerCode.IsGrounded()){
-            FindObjectOfType<AudioManager>().PlaySound("move");
+            audioManager.PlaySound("move");
             rb.AddForce(rb.transform.forward*direction.z*speed, ForceMode.Force);
              //Debug.Log("Moving");
         }
@@ -87,17 +87,17 @@ public class CharacterController : MonoBehaviour
     //Players jump function
     public void Jump(InputAction.CallbackContext context){
         //Player can only jump while on the ground.
-        if (context.performed && activePlayerCode.IsGrounded()){
+        if (context.performed && activePlayerCode.IsGrounded() && !turnOver){
             Debug.Log("Jumped");
             rb.velocity = new Vector3(0, force, 0); //I use velocity to make the jump more instant.
-            FindObjectOfType<AudioManager>().PlaySound("jump");
+            audioManager.PlaySound("jump");
         }
     }
 
     //Function for players aiming the gun in the game.
     public void Aim(InputAction.CallbackContext context){
         if(turnOver) return; //Stops players to run this function while waiting for the next turn.
-        FindObjectOfType<AudioManager>().PlaySound("aim");
+        audioManager.PlaySound("aim");
         if (!isAiming){
             activePlayerCode.ActivateAimCamera();
             isAiming = true;
@@ -114,9 +114,10 @@ public class CharacterController : MonoBehaviour
         }
         activePlayerCode.GetWeaponFire();
         activePlayerCode.DeactivateAimCamera();
-        FindObjectOfType<AudioManager>().PlaySound("fire");
+        audioManager.PlaySound("fire");
         isAiming = false;
         turnOver = true;
+        StartCoroutine(GameManager.gameManager.WaitForNextTurn(3f));
         Debug.Log("Fire");
     }
 
@@ -132,6 +133,13 @@ public class CharacterController : MonoBehaviour
         }
     }
 
+    public void StartTurn(InputAction.CallbackContext context){
+        if (!turnOver) return;
+        GameManager.gameManager.ResumeTurn();
+        turnOver = false;
+        Debug.Log("Turn Start");
+    }
+
     public void SetActivePlayer(GameObject player){
         activePlayer = player;
         rb = activePlayer.GetComponent<Rigidbody>();
@@ -143,24 +151,5 @@ public class CharacterController : MonoBehaviour
         Quaternion rotation = Quaternion.Euler(0, direction*rotSpeed*Time.fixedDeltaTime, 0);
         rb.MoveRotation(rb.rotation*rotation);
         //Debug.Log("Rotating");
-    }
-    
-    /*PlayerInputs playerInput;
-    Vector2 moveInput;
-    Vector3 movement;
-    bool movePressed;
-    // Start is called before the first frame update
-    private void Awake() {
-        playerInput = new PlayerInputs();
-        playerInput.Player.Move.started += context => {Debug.Log(context.ReadValue<Vector2>());};
-    }
-
-    void MovementInput (InputAction.CallbackContext context){
-        moveInput = context.ReadValue<Vector2>();
-        movement.x = moveInput.x;
-        movement.z = moveInput.y;
-        movePressed = moveInput.x != 0 || moveInput.y != 0;
-    }*/
-
-    
+    }    
 }

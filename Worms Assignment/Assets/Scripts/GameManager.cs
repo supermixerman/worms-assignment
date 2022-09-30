@@ -8,7 +8,7 @@ using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] GameObject playerPrefab;
+    [SerializeField] GameObject playerPrefab, continueScreen, gameCanvas, menuCanvas;
     [SerializeField] CinemachineVirtualCamera playerCamera;
     [SerializeField] int playerAmount, turn;
     [SerializeField] CharacterController characterController;
@@ -21,22 +21,41 @@ public class GameManager : MonoBehaviour
     [SerializeField] List<Transform> spawnLocations;
     private string winner;
     bool routineRunning;
+    public static GameManager gameManager;
 
     // Start is called before the first frame update
     void Awake()
     {
-        SpawnPlayers(playerAmount);
-        TurnStart();
+        if (gameManager == null){
+            gameManager = this;
+        }
+        else {
+            Destroy(this);
+        }
+        menuCanvas.SetActive(true);
+        //SpawnPlayers(playerAmount);
+        //TurnStart();
     }
 
     // Update is called once per frame
     void LateUpdate()
     {
-        if(characterController.turnOver&&!routineRunning || playerList[turn].GetComponent<Player>().IsDead()&&!routineRunning || roundTimer.GetTimer()<=0&&!routineRunning)
+        if(menuCanvas.activeInHierarchy) return;
+        if(roundTimer.GetTimer()<=0&&!routineRunning&&roundTimer.runTimer || playerList[turn].GetComponent<Player>().IsDead()&&!routineRunning)
         {
+            characterController.turnOver = true; //Just to make sure to disable player controls if the turn ends by timer.
             routineRunning = true;
             StartCoroutine(WaitForNextTurn(1f));
         }
+    }
+
+    public void StartGame(int players){
+        playerAmount = players;
+        SpawnPlayers(playerAmount);
+        TurnStart();
+        menuCanvas.SetActive(false);
+        gameCanvas.SetActive(true);
+
     }
 
     //Spawns the amount of players in spawn locations set out in the scene.
@@ -69,6 +88,8 @@ public class GameManager : MonoBehaviour
         characterController.SetActivePlayer(playerList[0]);
         CameraFollow(playerList[0].transform);
         turnText.text = "Turn: "+playerList[0].name;
+        characterController.turnOver = true;
+        continueScreen.SetActive(true);
     }
 
     public void NewTurn(){
@@ -78,15 +99,22 @@ public class GameManager : MonoBehaviour
             Debug.Log("Reset turn");
             turn = 0;
         }
-        if (playerList[turn].gameObject.GetComponent<Player>().IsDead()){
-           Debug.Log("Player "+ playerList[turn] + " inactive.");
-           return;
+        while(playerList[turn].gameObject.GetComponent<Player>().IsDead()){
+            Debug.Log("Player "+ playerList[turn] + " inactive.");
+            turn++;
+            if (turn >= playerList.Count){
+                Debug.Log("Reset turn");
+                turn = 0;
+            }
         }
+        /*if (playerList[turn].gameObject.GetComponent<Player>().IsDead()){
+           Debug.Log("Player "+ playerList[turn] + " inactive.");
+        }*/
         Debug.Log("Turn num = "+turn);
-        //playerList[turn].GetComponent<Player>().IsDead();
         characterController.SetActivePlayer(playerList[turn]);
         CameraFollow(playerList[turn].transform);
         turnText.text = "Turn: "+playerList[turn].name;
+        continueScreen.SetActive(true);
     }
 
     public void WinCheck(){
@@ -109,13 +137,16 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    IEnumerator WaitForNextTurn(float timer){
-        WinCheck();
+    public IEnumerator WaitForNextTurn(float timer){
+        roundTimer.StopTimer();
+        Debug.Log("Corutine Started");
         yield return new WaitForSeconds(timer);
+        WinCheck();
         if (winner == null){
             NewTurn();
             routineRunning = false;
         }
+        Debug.Log("Corutine Ended");
         yield return null;
     }
 
@@ -124,8 +155,8 @@ public class GameManager : MonoBehaviour
     }
 
     public void ResumeTurn(){
-        characterController.turnOver = false;
-        roundTimer.ResetTimer();
+        continueScreen.SetActive(false);
+        roundTimer.StartTimer();
     }
 }
 
