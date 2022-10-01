@@ -6,6 +6,7 @@ public class Weapon : MonoBehaviour
 {
     [SerializeField] int damage = 10;
     [SerializeField] GameObject startPoint;
+    [SerializeField] ParticleSystem shootParticles;
     // Start is called before the first frame update
     void Start()
     {
@@ -23,6 +24,7 @@ public class Weapon : MonoBehaviour
     }
 
     public void Fire(){
+        shootParticles.Play(true);
         RaycastHit hit;
         if (Physics.Raycast(startPoint.transform.position, transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity))
         {

@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     //[SerializeField] VictoryUI victoryUI;
     [SerializeField] List<GameObject> playerList;
     [SerializeField] List<Transform> spawnLocations;
+    [SerializeField] List<Color> playerColorsList;
     private string winner;
     bool routineRunning;
     public static GameManager gameManager;
@@ -37,7 +38,6 @@ public class GameManager : MonoBehaviour
         //TurnStart();
     }
 
-    // Update is called once per frame
     void LateUpdate()
     {
         if(menuCanvas.activeInHierarchy) return;
@@ -72,6 +72,9 @@ public class GameManager : MonoBehaviour
             playerList.Add(Instantiate(playerPrefab, spawnLocations[i].position, Quaternion.identity));
             playerList[i].gameObject.name = "Player " + (i+1);
             Debug.Log(playerList[i].gameObject.name);
+            if (playerColorsList.Count >= playerList.Count){
+                playerList[i].GetComponent<Player>().SetPlayerColor(playerColorsList[i]);
+            }
         }
     }
 
@@ -157,6 +160,10 @@ public class GameManager : MonoBehaviour
     public void ResumeTurn(){
         continueScreen.SetActive(false);
         roundTimer.StartTimer();
+    }
+
+    public void QuitGame(){
+        Application.Quit();
     }
 }
 

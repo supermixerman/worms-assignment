@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
     [SerializeField] HealthBar healthBar;
     [SerializeField] CinemachineVirtualCamera aimCam;
     [SerializeField] private bool grounded, isDead = false;
+    [SerializeField] SkinnedMeshRenderer playerRenderer;
     private Animator anim;
     //PlayerInput playerInput;
     void Awake()
@@ -78,12 +79,15 @@ public class Player : MonoBehaviour
         weaponEquipped = newWeapon;
     }
 
+    public void SetPlayerColor(Color colorChange){
+        playerRenderer.material.SetColor("_Color", colorChange);
+    }
+
     IEnumerator Dead(){
         Debug.Log("Player Dies");
         anim.SetInteger("DamageType", 2);
         anim.SetTrigger("Damage");
         yield return new WaitForSeconds(2f);
-        //StartCoroutine(GameManager.gameManager.WaitForNextTurn(1f));
         this.gameObject.SetActive(false);
         yield return null;
     }

@@ -520,8 +520,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6014111968011510373}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.31700003, y: 0.39680004, z: -0.6192}
+  m_LocalRotation: {x: 0.0000000051608846, y: -0.000000029802322, z: 0.000000008509509, w: 1}
+  m_LocalPosition: {x: 0.317, y: 0.39680004, z: -0.61920017}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -701,6 +701,7 @@ MonoBehaviour:
   aimCam: {fileID: 4448819014863028170}
   grounded: 0
   isDead: 0
+  playerRenderer: {fileID: 3479628458350416638}
 --- !u!95 &8087148769170482887
 Animator:
   serializedVersion: 4
@@ -1099,5 +1100,10 @@ PrefabInstance:
 --- !u!4 &2773898445893248871 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6216532115693788942, guid: d941199d4a58fcb45adc75ea8e37c42c, type: 3}
+  m_PrefabInstance: {fileID: 8087148769650800745}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &3479628458350416638 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 4643577701059586711, guid: d941199d4a58fcb45adc75ea8e37c42c, type: 3}
   m_PrefabInstance: {fileID: 8087148769650800745}
   m_PrefabAsset: {fileID: 0}
